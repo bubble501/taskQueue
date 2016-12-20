@@ -4,11 +4,12 @@ taskQueue is an task queue for golang. it steal the idea even the code from blog
 
 
 The usage of taskQueue is as simple as four steps:
+
 1. Create your own job struct which implement Execute methods.
 1. Create the queue.
 2. Start the queue.
 3. Add job to the queue.
-4. Waiting for worker to be finished in the main method if it will exit.
+4. Waiting for worker to be finished in the main method if it will exit (optional).
 
 ### Example
 ```golang
