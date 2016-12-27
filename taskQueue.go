@@ -1,9 +1,5 @@
 package taskQueue
 
-import (
-	"time"
-)
-
 //Job define the method Execute which should be provided by the concrete job struct.
 type Job interface {
 	Execute()
@@ -107,15 +103,4 @@ func (queue *Queue) AddJob(job Job) {
 //IsFree tell if queue is free (no job which is executing and no job which is pending).
 func (queue *Queue) IsFree() bool {
 	return len(queue.jobQueue) == 0 && len(queue.workerPool) == len(queue.workers)
-}
-
-//Wait will wait all job in the queue to be finished. it's main purpose is to avoid
-// the exit of whole program before all tasks in queue have been finished.
-func (queue *Queue) Wait() {
-	for {
-		time.Sleep(time.Second)
-		if len(queue.jobQueue) == 0 && len(queue.workerPool) == len(queue.workers) {
-			break
-		}
-	}
 }
