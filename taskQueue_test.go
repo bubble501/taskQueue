@@ -2,8 +2,10 @@ package taskQueue_test
 
 import (
 	"fmt"
-	"github.com/bubble501/taskQueue"
 	"testing"
+	"time"
+
+	"github.com/bubble501/taskQueue"
 )
 
 type TestJob struct {
@@ -18,16 +20,29 @@ func (job TestJob) Execute() {
 	//  fmt.Printf("the total for %d is %d\n", job.id, total)
 }
 
-func TestTastQueue(*testing.T) {
+func TestTaskQueueNormal(*testing.T) {
 	queue := taskQueue.New(8, 2000)
 	queue.Start()
-	var job taskQueue.Job
 	for i := 0; i < 300000; i++ {
-		testjob := TestJob{i}
-		job = testjob
-		queue.AddJob(job)
+		queue.AddJob(TestJob{i})
 	}
 
-	queue.Wait()
+	for {
+		time.Sleep(time.Second)
+		if queue.IsFree() {
+			break
+		}
+	}
+
 	fmt.Printf("Finished")
+}
+
+func TestTaskQueueStop(*testing.T) {
+	queue := taskQueue.New(8, 2000)
+	queue.Start()
+	for i := 0; i < 300000; i++ {
+		queue.AddJob(TestJob{i})
+	}
+
+	queue.Stop()
 }

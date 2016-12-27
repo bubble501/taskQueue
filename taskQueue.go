@@ -46,12 +46,16 @@ func (w Worker) stop() {
 	}()
 }
 
+//Queue is taskQueue which can be used to schedule specified N goroutine to
+//work for M tasks.
 type Queue struct {
 	workerPool chan chan Job
 	jobQueue   chan Job
 	workers    []Worker
 }
 
+//New is used to create taskQueue. maxWorkers is the number of work goroutines,
+// maxJobs is the number of tasks which can be buffered.
 func New(maxWorkers, maxJobs int) *Queue {
 	jobQueue := make(chan Job, maxJobs)
 	pool := make(chan chan Job, maxWorkers)
@@ -67,6 +71,7 @@ func New(maxWorkers, maxJobs int) *Queue {
 	}
 }
 
+//Start start all working goroutine and dispatch goroutine.
 func (queue *Queue) Start() {
 	for _, work := range queue.workers {
 		work.start()
@@ -97,6 +102,11 @@ func (queue *Queue) Stop() {
 //AddJob will add job to queue's jobQueue.
 func (queue *Queue) AddJob(job Job) {
 	queue.jobQueue <- job
+}
+
+//IsFree tell if queue is free (no job which is executing and no job which is pending).
+func (queue *Queue) IsFree() bool {
+	return len(queue.jobQueue) == 0 && len(queue.workerPool) == len(queue.workers)
 }
 
 //Wait will wait all job in the queue to be finished. it's main purpose is to avoid
